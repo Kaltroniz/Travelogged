@@ -1,7 +1,7 @@
 <% layout('layouts/boilerplate')%>
 
 <div class="row">
-    <div class="col-6 offset-3">
+    <div class="col-6 ">
         <div class="card mb-3">
             <img src="<%= cg.image%>" class="card-img-top mt-5 mb-3" style="max-height: 300px; object-fit: contain;" alt="">
             <div class="card-body">
@@ -22,5 +22,30 @@
                 2 days ago
             </div>
         </div>
+        </div>
+        <div class="col-6">
+        <h2>Leave a review</h2>
+        <form class="mb-3 valform" action="/campgrounds/<%=cg._id %>/reviews" method="post" novalidate>
+            <div class="mb-3">
+                <label for="rating" class="form-label">Rating</label>
+                <input type="range" min="1" max="5" name="review[rating]" class="form-range" id="rating">
+            </div>
+            <div class="mb-3">
+                <label for="body" class="form-label">Review</label>
+                <textarea name="review[body]" id="body" cols="30" rows="3" class="form-control"></textarea>
+            </div>
+            <button class="btn btn-success">Submit</button>
+        </form><% for(rev of cg.reviews) {%>
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Rating: <%= rev.rating  %></h5>
+            
+            <p class="card-text">Review: <%= rev.body %></p>
+            <form action="/campgrounds/<%=cg._id %>/reviews/<%=rev._id  %>?_method=DELETE" method="post">
+                <button class="btn btn-sm btn-danger">Delete</button>
+            </form>
+        </div>
+        </div>
+        <% } %>
     </div>
 </div>
