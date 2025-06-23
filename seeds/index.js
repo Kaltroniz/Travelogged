@@ -17,11 +17,16 @@ const seedDB=async()=>{
         const rand=Math.floor(Math.random()*100);
         const p=Math.floor(Math.random()*1000)+5000;
         const camp=new Campgr({
+            author: '68554f9f1c9f01cd093c30f2',
             location: `${cities[rand].city},${cities[rand].admin_name}`,
             title: `${sample(descriptors)} ${sample(places)}`,
             image: `https://picsum.photos/400?random=${Math.random()}`,
             description: 'lorem',
-            price: p
+            price: p,
+            geometry: {
+                type:"Point",
+                coordinates:[cities[rand].lng,cities[rand].lat]
+            }
         })
         await camp.save();
     }

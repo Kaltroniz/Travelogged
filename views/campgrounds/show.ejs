@@ -1,7 +1,9 @@
 <% layout('layouts/boilerplate')%>
+<link rel="stylesheet" href="/stylesheets/stars.css">
 
 <div class="row">
     <div class="col-6 ">
+        
         <div class="card mb-3">
             <img src="<%= cg.image%>" class="card-img-top mt-5 mb-3" style="max-height: 300px; object-fit: contain;" alt="">
             <div class="card-body">
@@ -10,42 +12,73 @@
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item text-muted"><%= cg.location%></li>
+                <li class="list-group-item text-muted">Submitted by:<%= cg.author.username%></li>
                 <li class="list-group-item">Rs:<%= cg.price%>/night</li>
             </ul>
+            <% if(currentUser && cg.author.equals(currentUser._id)){ %>
             <div class="card-body">
                 <a class="card-link btn btn-info" href="/campgrounds/<%=cg._id%>/edit">Edit</a>
                 <form class="d-inline" action="/campgrounds/<%=cg._id%>?_method=DELETE" method="POST">
                     <button class="btn btn-danger">Delete</button>
                 </form>
-            </div>
+            </div><% } %>
             <div class="card-footer text-muted">
                 2 days ago
             </div>
         </div>
         </div>
         <div class="col-6">
+            <div id='map' style='width: 400px; height: 300px;'></div>
+            <% if(currentUser){ %>
         <h2>Leave a review</h2>
         <form class="mb-3 valform" action="/campgrounds/<%=cg._id %>/reviews" method="post" novalidate>
-            <div class="mb-3">
+            <!-- <div class="mb-3">
                 <label for="rating" class="form-label">Rating</label>
                 <input type="range" min="1" max="5" name="review[rating]" class="form-range" id="rating">
-            </div>
+            </div> -->
+            <fieldset class="starability-basic">
+                <legend>First rating:</legend>
+                <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                <label for="first-rate1" title="Terrible">1 star</label>
+                <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                <label for="first-rate2" title="Not good">2 stars</label>
+                <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                <label for="first-rate3" title="Average">3 stars</label>
+                <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                <label for="first-rate4" title="Very good">4 stars</label>
+                <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                <label for="first-rate5" title="Amazing">5 stars</label>
+                </fieldset>
             <div class="mb-3">
                 <label for="body" class="form-label">Review</label>
                 <textarea name="review[body]" id="body" cols="30" rows="3" class="form-control"></textarea>
             </div>
             <button class="btn btn-success">Submit</button>
-        </form><% for(rev of cg.reviews) {%>
+        </form>
+        <% }for(rev of cg.reviews) {%>
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title">Rating: <%= rev.rating  %></h5>
+                <h5 class="card-title"><%= rev.author.username %> </h5>
+                
+                <p class="starability-result" data-rating="<%= rev.rating %>">
+                    Rated: <%= rev.rating %> stars
+                </p>
             
             <p class="card-text">Review: <%= rev.body %></p>
+            
+             <% if(currentUser && rev.author && rev.author.equals(currentUser._id)){ %>
             <form action="/campgrounds/<%=cg._id %>/reviews/<%=rev._id  %>?_method=DELETE" method="post">
                 <button class="btn btn-sm btn-danger">Delete</button>
             </form>
+            <% } %>
         </div>
         </div>
         <% } %>
     </div>
 </div>
+<script>
+    const maptilerApiKey = '<%- process.env.MAPTILER_API_KEY %>';
+    const campground = <%- JSON.stringify(cg) %>
+</script>
+<script src="/javascripts/showPageMap.js"></script>
