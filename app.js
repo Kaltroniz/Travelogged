@@ -1,5 +1,6 @@
 const express=require('express');
 const app =express();
+app.set('query parser', 'extended');
 const path=require('path');
 const ejsMate=require('ejs-mate');
 const Campgr=require('./models/campground');
@@ -20,9 +21,12 @@ const userRoutes=require('./routes/user.js')
 const passport=require('passport')
 const LocalStrategy=require('passport-local');
 const User=require('./models/user.js')
+const sanitizeV5 = require('./utils/mongoSanitizeV5.js');
 
+const MongoStore = require('connect-mongo');
+const dbUrl=process.env.DB_URL;
 
-mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp');
+mongoose.connect(dbUrl);
 
 
 const db=mongoose.connection;
@@ -38,8 +42,21 @@ app.set('views',path.join(__dirname,'views'))
 app.use(express.urlencoded({extended:true}));
 app.use(methodoverride('_method'));
 app.use(express.static(path.join(__dirname,'public')));
+app.use(sanitizeV5({ replaceWith: '_' }));
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: 'thisshouldbeabettersecret!'
+    }
+});
+store.on("error", function(e){
+    console.log("error",e)
+})
 
 const sessionConfig={
+    store,
+    name:'session',
     secret: 't',
     resave: false,
     saveUninitialised:true,

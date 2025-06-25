@@ -18,14 +18,14 @@ module.exports.newform=(req,res)=>{
 
 module.exports.createcamp=async (req,res)=>
 {   
-    console.log(process.env.MAPTILER_API_KEY)
+    
     const geoData = await maptilerClient.geocoding.forward(req.body.campground.location, { limit: 1 });
     const c = new Campgr(req.body.campground);
     c.geometry = geoData.features[0].geometry;
     
     c.author=req.user._id;
     
-    console.log(c);
+    
     await c.save();
     req.flash('success','successfully added campground');
     res.redirect(`/campgrounds/${c._id}`,)

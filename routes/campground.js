@@ -78,7 +78,7 @@ router.get('/:id',catchAsync(async (req,res)=>{
         req.flash('error','cannot find campground');
         return res.redirect('/campgrounds')
     }
-    console.log('cg');
+    
     
     return res.render('campgrounds/show',{cg});
 }))
